@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  dockercicd:
+    image: ${DOCKER_REGISTRY-}dockercicd
+    build:
+      context: .
+      dockerfile: dockercicd/Dockerfile
