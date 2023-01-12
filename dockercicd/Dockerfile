@@ -5,18 +5,17 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["dockercicd/dockercicd.csproj", "dockercicd/"]
-RUN dotnet restore "dockercicd/dockercicd.csproj"
-COPY . .
-WORKDIR "/src/dockercicd"
-RUN dotnet build "dockercicd.csproj" -c Release -o /app/build
 
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+WORKDIR /app
+
+COPY . ./
+RUN dotnet restore 
 FROM build AS publish
-RUN dotnet publish "dockercicd.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish -c Release -o /app/out /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "dockercicd.dll"]
