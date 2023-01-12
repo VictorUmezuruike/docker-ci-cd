@@ -12,10 +12,8 @@ WORKDIR /app
 
 COPY . ./
 RUN dotnet restore 
-FROM build AS publish
-RUN dotnet publish -c Release -o /app/out /p:UseAppHost=false
-
 FROM base AS final
+
 WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "dockercicd.dll"]
